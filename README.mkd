@@ -1,0 +1,27 @@
+Robot War Improved
+==================
+
+**Robot War Improved** (**rwi**) is a clone of the game *Robot War*,
+written in [Python][].
+
+[Python]: http://python.org/
+
+
+tl;dr
+-----
+
+You program a robot. The robot is released onto an arena. It fights
+other robots until only one is left. That robot wins the game.
+
+
+Quick start
+-----------
+
+Download *rwi*:
+
+    git clone git://github.com/lfairy/rwi
+    cd rwi
+
+Run the example:
+
+    bin/battle.py examples/duck.py examples/spin.py
