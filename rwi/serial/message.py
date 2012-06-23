@@ -1,3 +1,4 @@
+from rwi.serial.error import MessageError
 from rwi.serial.field import Field
 
 class Message(object):
@@ -45,8 +46,12 @@ class Message(object):
 
         # Take each field out of the dictionary, adding it to the result
         for field_name, field in cls._get_fields().items():
-            value = field.parse_dict(data.pop(field_name))
-            setattr(result, field_name, value)
+            try:
+                value = field.parse_dict(data.pop(field_name))
+            except KeyError:
+                raise MessageError('missing field: %s' % field_name)
+            else:
+                setattr(result, field_name, value)
 
         # Since we remove each attribute as we process it, if there are
         # any left in the dictionary it means they are invalid

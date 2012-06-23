@@ -33,12 +33,12 @@ def test_roundtrip():
         assert context.parse_json(context.unparse_json(message)) == message
 
 def test_invalid_type():
-    with pytest.raises(KeyError):
+    with pytest.raises(MessageError):
         context.parse_json('{"__name__": "InvalidSomething"}')
 
 def test_crappy_input():
     for crap in ['{}', '[]', '42', '"a"']:
-        with pytest.raises(Exception):
+        with pytest.raises(MessageError):
             context.parse_json(crap)
 
 def test_extra_attrs():

@@ -1,3 +1,5 @@
+from rwi.serial.error import MessageError
+
 class Field(object):
     """The base class of a message field.
 
@@ -17,28 +19,29 @@ class Field(object):
 
 class PrimitiveField(Field):
     """A field that wraps a primitive type, e.g. ``int`` or ``str``."""
-    @staticmethod
-    def unparse_dict(value):
-        return value
 
-class Int(PrimitiveField):
-    parse_dict = staticmethod(int)
-
-class Float(PrimitiveField):
-    parse_dict = staticmethod(float)
-
-class String(PrimitiveField):
-    @staticmethod
-    def parse_dict(data):
-        if not isinstance(data, basestring):
-            raise TypeError("expected 'basestring', got %s" % type(data))
+    def parse_dict(self, data):
+        if not isinstance(data, self.inner_type):
+            raise MessageError("expected type '%s', got '%s'"
+                % (self.inner_type.__name__, data.__class__.__name__))
         else:
             return data
 
+    def unparse_dict(self, value):
+        return value
+
+class Int(PrimitiveField):
+    inner_type = int
+
+class Float(PrimitiveField):
+    inner_type = float
+
+class String(PrimitiveField):
+    inner_type = basestring
+
 class List(Field):
-    def __init__(self, subtype, *args, **kwds):
+    def __init__(self, subtype):
         self.subtype = subtype
-        Field.__init__(self, *args, **kwds)
 
     def parse_dict(self, data):
         return [self.subtype.parse_dict(datum)

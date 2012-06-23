@@ -1,5 +1,7 @@
 import json
 
+from rwi.serial.error import MessageError
+
 class MessageContext:
     """Keeps track of all the message types.
 
@@ -35,13 +37,29 @@ class MessageContext:
 
     def parse_dict(self, data):
         """Load a message from a dictionary of attributes."""
-        name = data.pop('__name__')
-        cls = self.message_types[name]
+
+        try:
+            name = data.pop('__name__')
+        except (AttributeError, TypeError):
+            raise MessageError('data must be a dictionary')
+        except KeyError:
+            raise MessageError('message type field missing')
+
+        try:
+            cls = self.message_types[name]
+        except KeyError:
+            raise MessageError('invalid message type: %s' % name)
+
         return cls._from_dict(data)
 
     def parse_json(self, s):
         """Load a message from a JSON string."""
-        return self.parse_dict(json.loads(s))
+        try:
+            data = json.loads(s)
+        except ValueError:
+            raise MessageError('invalid JSON')
+        else:
+            return self.parse_dict(data)
 
     def unparse_dict(self, msg):
         """Convert a message to a dictionary of attributes."""
