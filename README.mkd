@@ -1,9 +1,10 @@
 Robot War Improved
 ==================
 
-**Robot War Improved** (**rwi**) is a clone of the game *Robot War*,
-written in [Python][].
+**Robot War Improved** (**rwi**) is a clone of the classic game
+*[RobotWar][]*, written in [Python][].
 
+[RobotWar]: http://en.wikipedia.org/wiki/RobotWar
 [Python]: http://python.org/
 
 
