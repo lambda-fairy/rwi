@@ -7,7 +7,6 @@ context = MessageContext()
 @context.add
 class Tick(Message):
     n = field.Int()
-    players = field.List(field.Int())
 
 @context.add
 class PlayerInfo(Message):
@@ -24,7 +23,7 @@ class EpicNestedList(Message):
     what = field.List(field.List(field.List(field.List(field.Int()))))
 
 def test_roundtrip():
-    t = Tick(n=1, players=[2**128-1, -5, 6])
+    t = Tick(n=1)
     p = PlayerInfo(id=999999999999999,
                    name=u'\0hello\uffff\uabcd\u1234"\ufffe',
                    health=42.42)
@@ -35,7 +34,7 @@ def test_roundtrip():
 
 def test_invalid_type():
     with pytest.raises(KeyError):
-        context.parse_json('{"__name__": "InvalidSomething", "fail": true}')
+        context.parse_json('{"__name__": "InvalidSomething"}')
 
 def test_crappy_input():
     for crap in ['{}', '[]', '42', '"a"']:
@@ -44,9 +43,9 @@ def test_crappy_input():
 
 def test_extra_attrs():
     with pytest.raises(AttributeError):
-        Tick(n=1, players=[4, -5, 6], blah="this shouldn't work")
+        Tick(n=1, blah="this shouldn't work")
 
 def test_missing_attrs():
-    t = Tick(n=1) # players missing!
+    t = Tick()
     with pytest.raises(AttributeError):
         context.unparse_json(t)
