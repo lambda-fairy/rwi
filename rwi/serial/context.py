@@ -63,7 +63,11 @@ class MessageContext:
 
     def unparse_dict(self, msg):
         """Convert a message to a dictionary of attributes."""
-        return msg._to_dict()
+        cls = msg.__class__
+        if self.message_types.get(cls.__name__) is not cls:
+            raise TypeError('unknown message type: %s' % cls.__name__)
+        else:
+            return msg._to_dict()
 
     def unparse_json(self, msg):
         """Convert a message to a JSON string."""
