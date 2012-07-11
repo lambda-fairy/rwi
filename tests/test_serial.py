@@ -20,7 +20,7 @@ class NoOp(Message):
 
 @context.add
 class EpicNestedList(Message):
-    what = field.List(field.List(field.List(field.List(field.Int()))))
+    what = field.List(field.List(field.List(field.List(field.Object(NoOp)))))
 
 def test_roundtrip():
     t = Tick(n=1)
@@ -28,7 +28,7 @@ def test_roundtrip():
                    name=u'\0hello\uffff\uabcd\u1234"\ufffe',
                    health=42.42)
     n = NoOp()
-    e = EpicNestedList(what=[[[[1,2,3],[4,5,6]]*2]*5]*3)
+    e = EpicNestedList(what=[[[[n,n,n],[n,n,n]]*2]*5]*3)
     for message in [t, p, n, e]: # Timpani! Boom boom boom!
         assert context.parse_json(context.unparse_json(message)) == message
 

@@ -50,3 +50,13 @@ class List(Field):
     def unparse_dict(self, value):
         return [self.subtype.unparse_dict(subvalue)
                 for subvalue in value]
+
+class Object(Field):
+    def __init__(self, subtype):
+        self.subtype = subtype
+
+    def parse_dict(self, data):
+        return self.subtype._from_dict(data)
+
+    def unparse_dict(self, value):
+        return self.subtype._to_dict(value)

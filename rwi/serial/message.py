@@ -44,6 +44,10 @@ class Message(object):
         data = data.copy()
         result = cls()
 
+        # Check the message type name is correct
+        if '__name__' not in data or data.pop('__name__') != cls.__name__:
+            raise MessageError("__name__ field is missing or doesn't match")
+
         # Take each field out of the dictionary, adding it to the result
         for field_name, field in cls._get_fields().items():
             try:
@@ -56,7 +60,7 @@ class Message(object):
         # Since we remove each attribute as we process it, if there are
         # any left in the dictionary it means they are invalid
         if data:
-            raise ValueError('unknown attributes: %s' % data)
+            raise MessageError('unknown attributes: %s' % data.keys())
 
         return result
 

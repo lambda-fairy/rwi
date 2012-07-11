@@ -39,7 +39,7 @@ class MessageContext:
         """Load a message from a dictionary of attributes."""
 
         try:
-            name = data.pop('__name__')
+            name = data['__name__']
         except (AttributeError, TypeError):
             raise MessageError('data must be a dictionary')
         except KeyError:
