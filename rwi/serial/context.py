@@ -39,7 +39,7 @@ class MessageContext:
         """Load a message from a dictionary of attributes."""
 
         try:
-            name = data['__name__']
+            name = data.pop('__name__')
         except (AttributeError, TypeError):
             raise MessageError('data must be a dictionary')
         except KeyError:
@@ -67,7 +67,9 @@ class MessageContext:
         if self.message_types.get(cls.__name__) is not cls:
             raise TypeError('unknown message type: %s' % cls.__name__)
         else:
-            return msg._to_dict()
+            data = msg._to_dict()
+            data['__name__'] = cls.__name__
+            return data
 
     def unparse_json(self, msg):
         """Convert a message to a JSON string."""

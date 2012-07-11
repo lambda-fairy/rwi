@@ -44,10 +44,6 @@ class Message(object):
         data = data.copy()
         result = cls()
 
-        # Check the message type name is correct
-        if '__name__' not in data or data.pop('__name__') != cls.__name__:
-            raise MessageError("__name__ field is missing or doesn't match")
-
         # Take each field out of the dictionary, adding it to the result
         for field_name, field in cls._get_fields().items():
             try:
@@ -68,10 +64,8 @@ class Message(object):
         """Convert this message to a dictionary that can then be
         serialized to JSON."""
 
-        # Initialize the result with the class name
-        result = {'__name__': self.__class__.__name__}
-
         # Add each field to the dictionary
+        result = {}
         for field_name, field in self._get_fields().items():
             result[field_name] = field.unparse_dict(getattr(self, field_name))
 
