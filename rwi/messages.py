@@ -33,9 +33,6 @@ class Tick(Message):
     If `n = 0`, a game has just begun. Clients should clear their
     internal state and prepare for a new game.
     """
-    n = field.Int()
-    status = field.Object(Status)
-    players = field.List(field.Object(Player))
 
     class Player(Message):
         """The status of an adversary."""
@@ -53,3 +50,7 @@ class Tick(Message):
         radar_dir = field.Float()
         direction = field.Float()
         speed = field.Float()
+
+    n = field.Int()
+    status = field.Object(Status)
+    players = field.List(field.Object(Player))
