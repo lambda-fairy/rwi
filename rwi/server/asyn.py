@@ -1,3 +1,5 @@
+"""Server implementation using ``asyncore``."""
+
 import asyncore
 import asynchat
 from cStringIO import StringIO
@@ -35,8 +37,19 @@ class AsynClient(Client, asynchat.async_chat):
         self.addr = addr
         self.ibuffer = StringIO()
 
+    # ==================================================================
+    # Client Methods
+    # ------------------------------------------------------------------
+
     def send_message(self, msg):
         self.push(M.context.unparse_json(msg) + D.MESSAGE_SEPARATOR)
+
+    def disconnect(self):
+        self.close()
+
+    # ==================================================================
+    # async_chat methods
+    # ------------------------------------------------------------------
 
     def collect_incoming_data(self, data):
         self.ibuffer.write(data)
@@ -49,9 +62,6 @@ class AsynClient(Client, asynchat.async_chat):
         finally:
             # Clear the buffer
             self.ibuffer = StringIO()
-
-    def disconnect(self):
-        self.close()
 
     def handle_close(self):
         del self.server.connected[self.addr]
