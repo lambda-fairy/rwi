@@ -40,6 +40,8 @@ class Server:
     def handle_Hello(self, client, msg):
         if self.game_started:
             raise DeservesKick('game has already started')
+        elif client in self.clients.values():
+            raise DeservesKick('invalid message')
         elif msg.name in self.clients:
             raise DeservesKick('name already taken')
         else:
