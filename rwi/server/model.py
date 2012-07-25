@@ -1,4 +1,8 @@
-"""Abstract server classes."""
+"""Abstract server classes.
+
+This module provides the platform independent part of the server -- in
+other words, the "M" in MVC.
+"""
 
 from rwi.serial import *
 import rwi.messages as M
@@ -17,12 +21,21 @@ class Server:
     def __init__(self):
         # Dictionary mapping client name -> client object
         self.clients = {}
-        # Whether the game has started or not
-        self.game_started = False
+        # Let clients join the game
+        self.handler = JoinHandler()
 
     def receive_message(self, client, s):
+        """Handle a receive message. This simply delegates to the
+        current message handler."""
+        self.handler.receive_message(self, client, s)
+
+class MessageHandler:
+    """A ``MessageHandler`` receives messages and acts on them."""
+
+    def receive_message(self, server, client, s):
         """Parse the message, handing it over to the appropriate
-        ``handle_XYZ`` method.
+        ``handle_XYZ`` method. If the message cannot be handled, throw a
+        ``DeservesKick`` exception.
         """
         try:
             # Parse the message
@@ -33,20 +46,22 @@ class Server:
             try:
                 # Choose which handler to use based on the message type
                 # For example, a Hello message will be passed to handle_Hello()
-                getattr(self, 'handle_' + msg.__class__.__name__)(client, msg)
+                getattr(self, 'handle_' + msg.__class__.__name__)(server, client, msg)
             except AttributeError:
                 raise DeservesKick('invalid message')
 
-    def handle_Hello(self, client, msg):
-        if self.game_started:
-            raise DeservesKick('game has already started')
-        elif client in self.clients.values():
+class JoinHandler(MessageHandler):
+    """Lets clients join the server with a ``Hello`` message."""
+
+    def handle_Hello(self, server, client, msg):
+        if client in server.clients.values():
+            # Client has already joined the game
             raise DeservesKick('invalid message')
-        elif msg.name in self.clients:
+        elif msg.name in server.clients:
             raise DeservesKick('name already taken')
         else:
             # Add the client to the game
-            self.clients[msg.name] = client
+            server.clients[msg.name] = client
             # TODO: add customizable server name and motd
             client.send_message(M.Olleh(server_name='', motd=''))
 
