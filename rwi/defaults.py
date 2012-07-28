@@ -1,0 +1,4 @@
+HOST = ''
+PORT = 42042
+
+MESSAGE_SEPARATOR = '\r\n\r\n'
